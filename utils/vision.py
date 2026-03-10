@@ -77,6 +77,23 @@ def analyze_image_with_gemini(image_path, api_key):
     """
     Use Gemini Vision API (google-genai SDK) to perform comprehensive soil analysis.
     """
+    # Handle missing or empty API key
+    if not api_key or api_key == "":
+        return {
+            "soil_type": "Mixed Agricultural Soil",
+            "soil_color": "Brown",
+            "texture": "Medium",
+            "moisture_level": "Medium",
+            "vegetation_presence": "Moderate",
+            "ph_estimate": "Neutral",
+            "drainage": "Moderate",
+            "organic_matter": "Medium",
+            "land_suitability": "Suitable for general crop cultivation",
+            "detected_issues": "None",
+            "confidence": "Low",
+            "note": "API key not configured. Used fallback values."
+        }
+    
     try:
         client = genai.Client(api_key=api_key)
 

@@ -6,9 +6,10 @@ Uses crop_dataset.csv to match soil and climate data.
 import pandas as pd
 import os
 
-
-DATASET_PATH = os.path.join(os.path.dirname(__file__), '..', 'models', 'crop_dataset.csv')
-PRICE_PATH = os.path.join(os.path.dirname(__file__), '..', 'models', 'price_dataset.csv')
+# Get the base directory - works both locally and on Vercel
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+DATASET_PATH = os.path.join(BASE_DIR, 'models', 'crop_dataset.csv')
+PRICE_PATH = os.path.join(BASE_DIR, 'models', 'price_dataset.csv')
 
 # Climate data by Indian state/district (avg rainfall mm, temp C)
 CLIMATE_DATA = {

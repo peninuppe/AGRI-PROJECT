@@ -387,9 +387,42 @@ function printResults() {
   window.print();
 }
 
+// ── GPS Location ─────────────────────────────────────────────────────────────
+function getGPS() {
+  if (!navigator.geolocation) {
+    showToast("⚠️ Geolocation not supported by your browser", "warning");
+    return;
+  }
+  
+  const latInput = document.getElementById("latInput");
+  const lngInput = document.getElementById("lngInput");
+  
+  if (!latInput || !lngInput) {
+    showToast("⚠️ Location inputs not found", "warning");
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      latInput.value = pos.coords.latitude.toFixed(6);
+      lngInput.value = pos.coords.longitude.toFixed(6);
+      showToast("📍 GPS coordinates captured!", "success");
+    },
+    (err) => {
+      let msg = "❌ Could not get GPS location";
+      if (err.code === 1) msg = "❌ GPS access denied. Please enable location permissions.";
+      else if (err.code === 2) msg = "❌ GPS position unavailable";
+      else if (err.code === 3) msg = "❌ GPS request timed out";
+      showToast(msg, "error");
+    },
+    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+  );
+}
+
 // ── Expose globally ────────────────────────────────────────────────────────────
 window.initResultsCharts = initResultsCharts;
 window.switchChart = switchChart;
 window.showToast = showToast;
 window.printResults = printResults;
 window.animateCounter = animateCounter;
+window.getGPS = getGPS;

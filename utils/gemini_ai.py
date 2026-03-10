@@ -20,6 +20,10 @@ def generate_agricultural_advice(soil_data, recommended_crops, profit_data, stat
     """
     Generate professional agricultural advice using Gemini API.
     """
+    # Handle missing or empty API key
+    if not api_key or api_key == "":
+        return _fallback_advice(profit_data[0]["crop"] if profit_data and isinstance(profit_data, list) and len(profit_data) > 0 else "Groundnut", state)
+    
     try:
         client = genai.Client(api_key=api_key)
 
@@ -97,6 +101,10 @@ def translate_text(text, target_language, api_key):
     lang_name = SUPPORTED_LANGUAGES.get(target_language, "English")
     if lang_name == "English":
         return text
+    
+    # Handle missing or empty API key
+    if not api_key or api_key == "":
+        return text
 
     try:
         client = genai.Client(api_key=api_key)
@@ -118,6 +126,16 @@ Text to translate:
 
 def get_weather_insights(state, district, api_key):
     """Get AI-generated weather and seasonal insights for a location."""
+    # Handle missing or empty API key
+    if not api_key or api_key == "":
+        return {
+            "avg_rainfall_mm": 90,
+            "avg_temp_celsius": 30,
+            "primary_season": "Kharif",
+            "climate_type": "Semi-arid to sub-humid",
+            "farming_challenges": "Irregular rainfall and temperature extremes"
+        }
+    
     try:
         client = genai.Client(api_key=api_key)
         prompt = f"""Provide brief agricultural weather insights for {district}, {state}, India.
