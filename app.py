@@ -4,7 +4,9 @@ Flask Backend Application
 
 Team: Penin, Thirupathi, Mallikarjuna
 University: Dhanalakshmi Srinivasan University
-"""
+
+Deployment: Vercel (Fixed - OpenCV headless, GPS, API key handling)
+""""
 
 import os
 import json
