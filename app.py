@@ -84,10 +84,27 @@ def analyze():
             return jsonify({"error": "Invalid file type. Use JPG, PNG, or WebP"}), 400
 
         # ── Save image ─────────────────────────────────────────────────────
+        # For Vercel: process in memory (read-only filesystem)
+        # For local: save to uploads folder
         ext = file.filename.rsplit(".", 1)[1].lower()
         unique_name = f"{uuid.uuid4().hex}.{ext}"
-        save_path = os.path.join(app.config["UPLOAD_FOLDER"], unique_name)
-        file.save(save_path)
+        
+        # Read file bytes directly (works on both local and Vercel)
+        image_bytes = file.read()
+        
+        # Check if we're running on Vercel (VERCEL environment variable)
+        is_vercel = os.environ.get("VERCEL", "") == "1"
+        
+        if is_vercel:
+            # On Vercel: process in memory, don't save to disk
+            save_path = None
+            image_for_analysis = None  # Will use bytes instead
+        else:
+            # Local: save to uploads folder
+            save_path = os.path.join(app.config["UPLOAD_FOLDER"], unique_name)
+            with open(save_path, "wb") as f:
+                f.write(image_bytes)
+            image_for_analysis = save_path
 
         # ── Form data ──────────────────────────────────────────────────────
         state = request.form.get("state", "Tamil Nadu")
@@ -98,7 +115,8 @@ def analyze():
         api_key = GEMINI_API_KEY
 
         # ── Step 1: Image analysis ─────────────────────────────────────────
-        soil_data = full_image_analysis(save_path, api_key)
+        # Pass image bytes for Vercel, path for local
+        soil_data = full_image_analysis(image_for_analysis, api_key, image_bytes)
 
         # ── Step 2: Climate data ───────────────────────────────────────────
         climate = get_climate_data(state, district)
@@ -127,9 +145,11 @@ def analyze():
         best_crop = get_best_crop(profit_data)
 
         # ── Build response ─────────────────────────────────────────────────
+        # Use saved path for local, None for Vercel
+        image_path = f"/static/uploads/{unique_name}" if not is_vercel else None
         response_data = {
             "success": True,
-            "image_path": f"/static/uploads/{unique_name}",
+            "image_path": image_path,
             "soil_analysis": soil_data,
             "climate": climate,
             "location": {"state": state, "district": district},

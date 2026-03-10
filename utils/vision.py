@@ -46,9 +46,14 @@ def classify_soil_color(r, g, b, hue, sat):
         return "Mixed Soil"
 
 
-def analyze_image_with_gemini(image_path, api_key):
+def analyze_image_with_gemini(image_path, api_key, image_bytes=None):
     """
     Use Gemini Vision API (google-genai SDK) to perform comprehensive soil analysis.
+    
+    Args:
+        image_path: Path to image file (used for extension detection)
+        api_key: Gemini API key
+        image_bytes: Image bytes (optional - for Vercel/in-memory processing)
     """
     # Handle missing or empty API key
     if not api_key or api_key == "":
@@ -70,13 +75,21 @@ def analyze_image_with_gemini(image_path, api_key):
     try:
         client = genai.Client(api_key=api_key)
 
-        ext = os.path.splitext(image_path)[1].lower()
+        # Get extension from path or use jpeg as default
+        if image_path:
+            ext = os.path.splitext(image_path)[1].lower()
+        else:
+            ext = ".jpg"
         mime_map = {".jpg": "image/jpeg", ".jpeg": "image/jpeg",
                     ".png": "image/png", ".webp": "image/webp", ".bmp": "image/bmp"}
         mime_type = mime_map.get(ext, "image/jpeg")
 
-        with open(image_path, "rb") as f:
-            image_bytes = f.read()
+        # Use provided bytes or read from file
+        if image_bytes is not None:
+            image_data = image_bytes
+        else:
+            with open(image_path, "rb") as f:
+                image_data = f.read()
 
         prompt = """Analyze this land/soil image and provide a detailed agricultural assessment. 
 Return your response ONLY as a valid JSON object with these exact keys:
@@ -98,7 +111,7 @@ Return ONLY the JSON, no other text."""
         response = client.models.generate_content(
             model="gemini-2.0-flash",
             contents=[
-                types.Part.from_bytes(data=image_bytes, mime_type=mime_type),
+                types.Part.from_bytes(data=image_data, mime_type=mime_type),
                 prompt
             ]
         )
@@ -131,10 +144,16 @@ Return ONLY the JSON, no other text."""
         return {"error": str(e), "soil_type": "Unknown"}
 
 
-def full_image_analysis(image_path, api_key):
-    """Use Gemini for image analysis (OpenCV disabled for Vercel)."""
+def full_image_analysis(image_path, api_key, image_bytes=None):
+    """Use Gemini for image analysis (OpenCV disabled for Vercel).
+    
+    Args:
+        image_path: Path to image file (for extension detection)
+        api_key: Gemini API key
+        image_bytes: Image bytes (optional - for Vercel/in-memory processing)
+    """
     # Skip OpenCV analysis - use Gemini only
-    gemini_data = analyze_image_with_gemini(image_path, api_key)
+    gemini_data = analyze_image_with_gemini(image_path, api_key, image_bytes)
     
     # Use Gemini data as the primary source
     if "error" in gemini_data or gemini_data.get("soil_type") == "Unknown":
