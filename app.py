@@ -206,7 +206,6 @@ if __name__ == "__main__":
     # Use 127.0.0.1 for local security - only accessible from this machine
     app.run(debug=True, host="127.0.0.1", port=5000)
 
-# ─── Vercel WSGI Handler ─────────────────────────────────────────────────────
-# This allows Vercel to import and run the Flask app
-def handler(environ, start_response):
-    return app(environ, start_response)
+# ─── Vercel Export ───────────────────────────────────────────────────────────
+# For Vercel: export the Flask app as 'app' (WSGI callable)
+# Vercel's @vercel/python will import this directly
