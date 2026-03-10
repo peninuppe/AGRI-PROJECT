@@ -4,8 +4,7 @@ Flask Backend Application
 
 Team: Penin, Thirupathi, Mallikarjuna
 University: Dhanalakshmi Srinivasan University
-""""
-
+"""
 import os
 import json
 import uuid
@@ -192,13 +191,22 @@ def api_states():
 
 
 # ─── Run ──────────────────────────────────────────────────────────────────────
+# For local development: use 127.0.0.1 (localhost) for security
+# For Vercel: Vercel will import the app object directly, not run this block
 if __name__ == "__main__":
     print("=" * 60)
     print("  AI Smart Crop Recommendation & Profit Prediction System")
     print("  Team: Penin, Thirupathi, Mallikarjuna")
     print("  Dhanalakshmi Srinivasan University")
     print("=" * 60)
-    print("  Server running at: http://localhost:5000")
-    print("  Set GEMINI_API_KEY environment variable or enter in the app")
+    print("  Server running at: http://127.0.0.1:5000")
+    print("  Set API_KEY environment variable or enter in the app")
+    print("  For Vercel deployment: API_KEY must be set in Vercel dashboard")
     print("=" * 60)
-    app.run(debug=True, host="0.0.0.0", port=5000)
+    # Use 127.0.0.1 for local security - only accessible from this machine
+    app.run(debug=True, host="127.0.0.1", port=5000)
+
+# ─── Vercel WSGI Handler ─────────────────────────────────────────────────────
+# This allows Vercel to import and run the Flask app
+def handler(environ, start_response):
+    return app(environ, start_response)
