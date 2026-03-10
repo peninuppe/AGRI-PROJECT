@@ -1,0 +1,16 @@
+crop,price_per_kg,unit,market
+Paddy,22,kg,MSP
+Wheat,21,kg,MSP
+Maize,20,kg,Market
+Groundnut,65,kg,Market
+Cotton,70,kg,MSP
+Sugarcane,3.5,kg,MSP
+Millet,23,kg,MSP
+Sorghum,30,kg,Market
+Soybean,45,kg,Market
+Turmeric,150,kg,Market
+Banana,25,kg,Market
+Tomato,20,kg,Market
+Onion,18,kg,Market
+Chilli,120,kg,Market
+Sunflower,55,kg,Market

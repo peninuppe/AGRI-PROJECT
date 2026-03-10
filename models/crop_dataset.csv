@@ -1,0 +1,26 @@
+crop,soil_type,rainfall_min,rainfall_max,temp_min,temp_max,yield_per_acre,cost_per_acre,season
+Paddy,Clay Loam,100,200,20,35,2000,18000,Kharif
+Paddy,Alluvial,100,200,20,35,2200,18000,Rabi
+Wheat,Loamy,60,100,12,25,1800,15000,Rabi
+Wheat,Clay Loam,60,100,12,25,1700,15000,Rabi
+Maize,Sandy Loam,50,100,18,30,2500,20000,Kharif
+Maize,Loamy,50,100,18,30,2600,20000,Kharif
+Groundnut,Red Loamy,50,100,25,35,1200,25000,Kharif
+Groundnut,Sandy Loam,50,100,25,35,1100,25000,Kharif
+Cotton,Black Cotton,50,100,25,40,900,35000,Kharif
+Cotton,Red Loamy,50,100,25,40,800,35000,Kharif
+Sugarcane,Loamy,100,150,20,35,30000,50000,Annual
+Sugarcane,Red Loamy,100,150,20,35,28000,50000,Annual
+Millet,Sandy,30,60,25,40,800,12000,Kharif
+Millet,Red Loamy,30,60,25,40,750,12000,Kharif
+Sorghum,Black Cotton,40,80,25,35,900,14000,Kharif
+Sorghum,Red Loamy,40,80,25,35,850,14000,Rabi
+Soybean,Black Cotton,60,100,20,30,1000,20000,Kharif
+Soybean,Loamy,60,100,20,30,950,20000,Kharif
+Turmeric,Red Loamy,150,250,20,35,2500,40000,Annual
+Turmeric,Loamy,150,250,20,35,2400,40000,Annual
+Banana,Alluvial,150,200,20,35,15000,60000,Annual
+Tomato,Sandy Loam,50,100,15,30,8000,45000,Annual
+Onion,Sandy Loam,40,80,15,30,5000,30000,Rabi
+Chilli,Red Loamy,60,120,20,35,1200,28000,Kharif
+Sunflower,Loamy,40,80,20,35,700,18000,Rabi

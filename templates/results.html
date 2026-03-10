@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Analysis Results — AgriSmart AI</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>" />
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+
+<!-- Uni Banner -->
+<div class="uni-banner">
+  🎓 Dhanalakshmi Srinivasan University &nbsp;|&nbsp; AI Smart Crop Recommendation System
+</div>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <div class="brand-icon">🌾</div>
+      <div class="brand-text">
+        <span class="brand-title">AgriSmart AI</span>
+        <span class="brand-sub">Analysis Results</span>
+      </div>
+    </a>
+    <div class="ms-auto d-flex gap-2 align-items-center">
+      <a href="/" class="btn-outline-green btn" style="padding:7px 18px;font-size:0.85rem;">
+        <i class="bi bi-arrow-left me-1"></i>New Analysis
+      </a>
+      <button onclick="printResults()" class="btn-gold btn" style="padding:7px 18px;font-size:0.85rem;">
+        <i class="bi bi-printer me-1"></i>Print
+      </button>
+    </div>
+  </div>
+</nav>
+
+{% if data %}
+<!-- ── Results Available ─────────────────────────────────────────── -->
+{% set soil = data.soil_analysis %}
+{% set crops = data.recommended_crops %}
+{% set profit = data.profit_analysis %}
+{% set best = data.best_crop %}
+{% set advice = data.advice %}
+{% set climate = data.climate %}
+{% set location = data.location %}
+
+<div class="container py-4">
+
+  <!-- ══════════════════════════════════════════════
+       TOP SUMMARY BAR
+  ════════════════════════════════════════════════ -->
+  <div class="card mb-4" style="background:linear-gradient(135deg,var(--primary-dark),var(--primary));color:white;border:none;">
+    <div class="card-body p-4">
+      <div class="row align-items-center g-3">
+        <div class="col-md-3 text-center">
+          {% if data.image_path %}
+          <img src="{{ data.image_path }}" alt="Land image"
+               style="max-height:120px;border-radius:10px;border:3px solid rgba(255,255,255,0.3);object-fit:cover;width:100%;" />
+          {% endif %}
+        </div>
+        <div class="col-md-5">
+          <small style="color:rgba(255,255,255,0.65);text-transform:uppercase;letter-spacing:1px;font-size:0.72rem;">Analysis Complete</small>
+          <h3 style="color:var(--gold-light);margin:4px 0 8px;font-size:1.4rem;">
+            {{ soil.get('soil_type', 'Agricultural Land') }}
+          </h3>
+          <p style="color:rgba(255,255,255,0.8);font-size:0.88rem;margin:0;">
+            <i class="bi bi-geo-alt-fill me-1"></i>
+            {{ location.district }}{% if location.district %}, {% endif %}{{ location.state }}
+            &nbsp;|&nbsp;
+            <i class="bi bi-aspect-ratio-fill me-1"></i>{{ data.acres }} Acre(s)
+            &nbsp;|&nbsp;
+            <i class="bi bi-translate me-1"></i>{{ data.language | upper }}
+          </p>
+        </div>
+        <div class="col-md-4">
+          {% if best %}
+          <div style="background:rgba(201,162,39,0.15);border:1.5px solid rgba(201,162,39,0.4);border-radius:12px;padding:14px;text-align:center;">
+            <small style="color:var(--gold-light);font-size:0.72rem;text-transform:uppercase;letter-spacing:1px;">🏆 Best Crop</small>
+            <div style="font-size:1.5rem;font-weight:700;color:white;font-family:'Playfair Display',serif;margin:4px 0;">
+              {{ best.crop }}
+            </div>
+            <div style="color:var(--gold-light);font-weight:700;font-size:1.05rem;">
+              ₹{{ "{:,.0f}".format(best.profit) }} profit/acre
+            </div>
+            <div style="font-size:0.78rem;color:rgba(255,255,255,0.65);">ROI: {{ best.roi_percent }}%</div>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+
+    <!-- ══════════════════════════════════════════════
+         LEFT COLUMN: Soil + Climate
+    ════════════════════════════════════════════════ -->
+    <div class="col-lg-4">
+
+      <!-- Soil Analysis Card -->
+      <div class="card mb-4">
+        <div class="card-header-custom">
+          <i class="bi bi-layers-fill fs-5"></i>
+          <h5>Soil Analysis</h5>
+        </div>
+        <div class="card-body-padded">
+          <div class="text-center mb-3">
+            <div class="soil-type-badge">
+              🌍 {{ soil.get('soil_type', 'Unknown Soil') }}
+            </div>
+            <p style="font-size:0.82rem;color:var(--text-muted);margin:0;">
+              {{ soil.get('land_suitability', '') }}
+            </p>
+          </div>
+
+          <!-- Detail grid -->
+          <div class="soil-detail-grid">
+            <div class="soil-detail-item">
+              <div class="label">Texture</div>
+              <div class="value">{{ soil.get('texture', '—') }}</div>
+            </div>
+            <div class="soil-detail-item">
+              <div class="label">pH Level</div>
+              <div class="value">{{ soil.get('ph_estimate', '—') }}</div>
+            </div>
+            <div class="soil-detail-item">
+              <div class="label">Drainage</div>
+              <div class="value">{{ soil.get('drainage', '—') }}</div>
+            </div>
+            <div class="soil-detail-item">
+              <div class="label">Organic Matter</div>
+              <div class="value">{{ soil.get('organic_matter', '—') }}</div>
+            </div>
+          </div>
+
+          <!-- Moisture bar -->
+          <div class="mt-3">
+            <div style="display:flex;justify-content:space-between;font-size:0.8rem;margin-bottom:4px;">
+              <span style="font-weight:600;color:var(--primary-dark);">💧 Moisture Level</span>
+              <span style="font-weight:700;color:var(--primary);">{{ soil.get('moisture_level', 'Medium') }}</span>
+            </div>
+            {% set moisture_val = {'Low': 25, 'Medium': 60, 'High': 90}.get(soil.get('moisture_level', 'Medium'), 60) %}
+            {% set moisture_class = {'Low': 'level-low', 'Medium': 'level-medium', 'High': 'level-high'}.get(soil.get('moisture_level', 'Medium'), 'level-medium') %}
+            <div class="level-bar">
+              <div class="level-bar-fill {{ moisture_class }}" style="width:{{ moisture_val }}%;"></div>
+            </div>
+          </div>
+
+          <!-- Vegetation bar -->
+          <div class="mt-3">
+            <div style="display:flex;justify-content:space-between;font-size:0.8rem;margin-bottom:4px;">
+              <span style="font-weight:600;color:var(--primary-dark);">🌱 Vegetation</span>
+              <span style="font-weight:700;color:var(--primary);">{{ soil.get('vegetation_presence', 'Moderate') }}</span>
+            </div>
+            {% set veg_val = {'Low': 25, 'Moderate': 55, 'High': 88}.get(soil.get('vegetation_presence', 'Moderate'), 55) %}
+            <div class="level-bar">
+              <div class="level-bar-fill level-high" style="width:{{ veg_val }}%;"></div>
+            </div>
+          </div>
+
+          {% if soil.get('detected_issues') and soil.get('detected_issues') != 'None' %}
+          <div class="alert-custom alert-warning mt-3" style="padding:10px 14px;">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <small>{{ soil.detected_issues }}</small>
+          </div>
+          {% endif %}
+
+          {% if soil.get('confidence') %}
+          <div style="text-align:right;margin-top:10px;">
+            <small style="color:var(--text-muted);font-size:0.75rem;">
+              AI Confidence: <strong>{{ soil.confidence }}</strong>
+            </small>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Climate Card -->
+      <div class="card mb-4">
+        <div class="card-header-custom card-header-blue">
+          <i class="bi bi-cloud-sun-fill fs-5"></i>
+          <h5>Climate Data</h5>
+        </div>
+        <div class="card-body-padded">
+          <div class="climate-grid">
+            <div class="climate-item">
+              <div class="ci-icon">🌧️</div>
+              <div class="ci-value">{{ climate.get('rainfall', 90) }}</div>
+              <div class="ci-label">Rainfall (mm)</div>
+            </div>
+            <div class="climate-item">
+              <div class="ci-icon">🌡️</div>
+              <div class="ci-value">{{ climate.get('temp', 30) }}°C</div>
+              <div class="ci-label">Avg Temp</div>
+            </div>
+            <div class="climate-item">
+              <div class="ci-icon">📅</div>
+              <div class="ci-value" style="font-size:0.85rem;">{{ climate.get('season', 'Kharif') }}</div>
+              <div class="ci-label">Season</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Crop Suitability Scores -->
+      {% if crops %}
+      <div class="card">
+        <div class="card-header-custom card-header-gold">
+          <i class="bi bi-trophy-fill fs-5"></i>
+          <h5>Suitability Scores</h5>
+        </div>
+        <div class="card-body-padded">
+          {% for crop in crops %}
+          <div style="margin-bottom:12px;">
+            <div style="display:flex;justify-content:space-between;font-size:0.83rem;margin-bottom:3px;">
+              <span style="font-weight:600;">{{ crop.crop }}</span>
+              <span style="color:var(--primary);font-weight:700;">{{ crop.suitability_score }}%</span>
+            </div>
+            <div class="level-bar">
+              <div class="level-bar-fill level-high" style="width:{{ crop.suitability_score }}%;"></div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- ══════════════════════════════════════════════
+         RIGHT COLUMN: Main Results
+    ════════════════════════════════════════════════ -->
+    <div class="col-lg-8">
+
+      <!-- Crop Recommendation Cards -->
+      <div class="card mb-4">
+        <div class="card-header-custom">
+          <i class="bi bi-grid-fill fs-5"></i>
+          <h5>Recommended Crops</h5>
+        </div>
+        <div class="card-body-padded">
+          <div class="crop-cards-grid">
+            {% for crop in crops %}
+            {% set is_best = (best and crop.crop == best.crop) %}
+            {% set p_item = namespace(data=None) %}
+            {% for p in profit %}
+              {% if p.crop == crop.crop %}{% set p_item.data = p %}{% endif %}
+            {% endfor %}
+            <div class="crop-card {% if is_best %}best{% endif %}">
+              <div class="crop-card-header">
+                <h5>{{ crop.crop }}</h5>
+                <div class="crop-rank">{{ loop.index }}</div>
+              </div>
+              <div class="crop-card-body">
+                {% if is_best %}
+                <div class="mb-2"><span class="best-badge">🏆 Best Choice</span></div>
+                {% endif %}
+                <div class="crop-stat-row">
+                  <span class="csr-label">🌱 Season</span>
+                  <span class="csr-value">{{ crop.season }}</span>
+                </div>
+                <div class="crop-stat-row">
+                  <span class="csr-label">📦 Yield</span>
+                  <span class="csr-value">{{ "{:,}".format(crop.yield_per_acre) }} kg/acre</span>
+                </div>
+                <div class="crop-stat-row">
+                  <span class="csr-label">🌧️ Rainfall</span>
+                  <span class="csr-value">{{ crop.rainfall_required }}</span>
+                </div>
+                <div class="crop-stat-row">
+                  <span class="csr-label">🌡️ Temp</span>
+                  <span class="csr-value">{{ crop.temp_required }}</span>
+                </div>
+                {% if p_item.data %}
+                <div class="crop-stat-row">
+                  <span class="csr-label">💰 Price</span>
+                  <span class="csr-value">₹{{ p_item.data.price_per_kg }}/kg</span>
+                </div>
+                <div class="mt-2 text-center">
+                  <span class="profit-chip">Profit: ₹{{ "{:,.0f}".format(p_item.data.profit) }}</span>
+                </div>
+                {% endif %}
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Profit Comparison Table -->
+      {% if profit %}
+      <div class="card mb-4">
+        <div class="card-header-custom card-header-gold">
+          <i class="bi bi-table fs-5"></i>
+          <h5>Crop Profit Comparison Table</h5>
+        </div>
+        <div class="card-body-padded">
+          <div class="profit-table-wrapper">
+            <table class="profit-table">
+              <thead>
+                <tr>
+                  <th>Crop</th>
+                  <th>Yield (kg)</th>
+                  <th>Price/kg</th>
+                  <th>Revenue</th>
+                  <th>Cost</th>
+                  <th>Profit</th>
+                  <th>ROI%</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for p in profit %}
+                <tr class="{% if best and p.crop == best.crop %}best-row{% endif %}">
+                  <td>
+                    <strong>{{ p.crop }}</strong>
+                    {% if best and p.crop == best.crop %}
+                    <span class="best-badge ms-1">Best</span>
+                    {% endif %}
+                  </td>
+                  <td>{{ "{:,}".format(p.yield_kg) }}</td>
+                  <td>₹{{ p.price_per_kg }}</td>
+                  <td>₹{{ "{:,.0f}".format(p.revenue) }}</td>
+                  <td>₹{{ "{:,.0f}".format(p.cost) }}</td>
+                  <td class="{% if p.profit >= 0 %}profit-positive{% else %}profit-negative{% endif %}">
+                    ₹{{ "{:,.0f}".format(p.profit) }}
+                  </td>
+                  <td><span class="roi-badge">{{ p.roi_percent }}%</span></td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          <div class="mt-3">
+            <small style="color:var(--text-muted);font-size:0.78rem;">
+              * Based on {{ data.acres }} acre(s) of land. Revenue = Yield × Market Price. Profit = Revenue − Cost of Cultivation.
+            </small>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Charts Section -->
+      {% if profit %}
+      <div class="card mb-4">
+        <div class="card-header-custom card-header-blue">
+          <i class="bi bi-bar-chart-line-fill fs-5"></i>
+          <h5>Visual Profit Comparison</h5>
+        </div>
+        <div class="card-body-padded">
+          <!-- Chart tabs -->
+          <div class="chart-tabs">
+            <button class="chart-tab active" data-chart="profit" onclick="switchChart('profit')">
+              📊 Revenue vs Profit
+            </button>
+            <button class="chart-tab" data-chart="yield" onclick="switchChart('yield')">
+              📦 Yield Comparison
+            </button>
+            <button class="chart-tab" data-chart="roi" onclick="switchChart('roi')">
+              🎯 ROI Breakdown
+            </button>
+          </div>
+
+          <div id="panel-profit" class="chart-panel">
+            <div class="chart-container">
+              <canvas id="profitChart"></canvas>
+            </div>
+          </div>
+          <div id="panel-yield" class="chart-panel d-none">
+            <div class="chart-container">
+              <canvas id="yieldChart"></canvas>
+            </div>
+          </div>
+          <div id="panel-roi" class="chart-panel d-none">
+            <div class="chart-container">
+              <canvas id="roiChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- AI Advice Section -->
+      {% if advice %}
+      <div class="card mb-4">
+        <div class="card-header-custom">
+          <i class="bi bi-robot fs-5"></i>
+          <h5>AI Agricultural Expert Advice</h5>
+        </div>
+        <div class="card-body-padded">
+          <div class="advice-grid">
+
+            {% if advice.overview %}
+            <div class="advice-card">
+              <div class="advice-icon">🌾</div>
+              <h6>Land Overview</h6>
+              <p>{{ advice.overview }}</p>
+            </div>
+            {% endif %}
+
+            {% if advice.top_crop_advice %}
+            <div class="advice-card gold-border">
+              <div class="advice-icon">🏆</div>
+              <h6>Top Crop Recommendation</h6>
+              <p>{{ advice.top_crop_advice }}</p>
+            </div>
+            {% endif %}
+
+            {% if advice.risks %}
+            <div class="advice-card red-border">
+              <div class="advice-icon">⚠️</div>
+              <h6>Farming Risks & Mitigation</h6>
+              <p>{{ advice.risks }}</p>
+            </div>
+            {% endif %}
+
+            {% if advice.irrigation %}
+            <div class="advice-card blue-border">
+              <div class="advice-icon">💧</div>
+              <h6>Irrigation Recommendations</h6>
+              <p>{{ advice.irrigation }}</p>
+            </div>
+            {% endif %}
+
+            {% if advice.fertilizer %}
+            <div class="advice-card teal-border">
+              <div class="advice-icon">🧪</div>
+              <h6>Fertilizer & Nutrients</h6>
+              <p>{{ advice.fertilizer }}</p>
+            </div>
+            {% endif %}
+
+            {% if advice.market_tip %}
+            <div class="advice-card gold-border">
+              <div class="advice-icon">💹</div>
+              <h6>Market Strategy</h6>
+              <p>{{ advice.market_tip }}</p>
+            </div>
+            {% endif %}
+
+            {% if advice.best_season %}
+            <div class="advice-card">
+              <div class="advice-icon">📅</div>
+              <h6>Planting Season & Timing</h6>
+              <p>{{ advice.best_season }}</p>
+            </div>
+            {% endif %}
+
+          </div>
+
+          {% if advice.get('error') %}
+          <div class="alert-custom alert-warning mt-3">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <small>Note: {{ advice.get('note', advice.get('error')) }}</small>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Back Button -->
+      <div class="text-center py-3">
+        <a href="/" class="btn-primary-custom" style="display:inline-flex;text-decoration:none;">
+          <i class="bi bi-arrow-left"></i>
+          Start New Analysis
+        </a>
+        <button onclick="printResults()" class="btn-gold ms-3" style="border:none;">
+          <i class="bi bi-printer"></i>
+          Print / Save PDF
+        </button>
+      </div>
+
+    </div><!-- /col-lg-8 -->
+  </div><!-- /row -->
+</div><!-- /container -->
+
+{% else %}
+<!-- ── No Data Available ──────────────────────────────────────── -->
+<div class="container py-5 text-center">
+  <div style="max-width:480px;margin:0 auto;padding:60px 40px;background:white;border-radius:var(--radius);box-shadow:var(--shadow);">
+    <div style="font-size:4rem;margin-bottom:16px;">🌾</div>
+    <h3 style="color:var(--primary-dark);margin-bottom:12px;">No Analysis Yet</h3>
+    <p style="color:var(--text-muted);margin-bottom:28px;">
+      Please go to the home page, upload a land image, and run the analysis first.
+    </p>
+    <a href="/" class="btn-primary-custom" style="display:inline-flex;text-decoration:none;">
+      <i class="bi bi-house-fill"></i>
+      Go to Home Page
+    </a>
+  </div>
+</div>
+{% endif %}
+
+<!-- Footer -->
+<footer>
+  <div class="container">
+    <div class="footer-bottom">
+      <p>© 2024 AgriSmart AI — Dhanalakshmi Srinivasan University</p>
+      <div class="team-credits mt-2">
+        <span>👨‍💻 Penin</span>
+        <span>👨‍💻 Thirupathi</span>
+        <span>👨‍💻 Mallikarjuna</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Toast Container -->
+<div id="toast-container"></div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<!-- Main JS -->
+<script src="/static/js/main.js"></script>
+
+{% if data and data.profit_analysis %}
+<script>
+  // Pass profit data to chart initialization
+  const profitData = {{ data.profit_analysis | tojson }};
+  document.addEventListener("DOMContentLoaded", () => {
+    initResultsCharts(profitData);
+  });
+</script>
+{% endif %}
+
+</body>
+</html>
