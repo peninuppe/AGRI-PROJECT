@@ -1,8 +1,5 @@
 # 🌾 AI-Based Smart Crop Recommendation & Profit Prediction System
 
-**Developed by:** Penin, Thirupathi, Mallikarjuna  
-**University:** Dhanalakshmi Srinivasan University
-
 ---
 
 ## 🚀 Quick Start
